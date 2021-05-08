@@ -12,11 +12,13 @@ var repoSearchTerm = document.querySelector('#repo-search-term');
 
 // Pull search history if it exists.
 var priorSearches = []
+
 if (localStorage.getItem('pastSearchData') !== null) {
     var priorSearches = JSON.parse(window.localStorage.getItem('pastSearchData'));
     for ( var i = 0; i < priorSearches.length; i ++) {
         var pastButton = $('<button>').addClass('btn pastBtn');
         pastButton.text(priorSearches[i]);
+        $('#pastSearch').append(pastButton)
     };
 };
 
@@ -28,6 +30,9 @@ function pullweather(locationData) {
     fetch(apiUrl)
     .then(function (response) {
       console.log(response);
+      if (response.status !== 200) {
+        $('#searchCity').text('City Not Found!');
+      }
       return response.json();
     })
     .then(function (data) {
@@ -40,14 +45,32 @@ function pullweather(locationData) {
         // update display to indicate the city you are showing weather for
         $('#searchCity').text(data.name);
         pullAllWeather();
-    });
-    
-}
+
+        // code to rebuild the history of past searches based on search.
+        $('#pastSearch').empty();
+        if (localStorage.getItem('pastSearchData') !== null) {
+            priorSearches = JSON.parse(window.localStorage.getItem('pastSearchData'));
+            priorSearches.unshift(data.name);
+            console.log(priorSearches);
+            if (priorSearches.length > 5) {
+                priorSearches.pop();
+            };
+            } else {
+                priorSearches.unshift(data.name);
+                }
+            for ( var i = 0; i < priorSearches.length; i ++) {
+                var pastButton2 = $('<button>').addClass('btn pastBtn');
+                pastButton2.text(priorSearches[i]);
+                $('#pastSearch').append(pastButton2)
+                };
+            localStorage.setItem('pastSearchData', JSON.stringify(priorSearches));
+    })
+};
 // pulls all needed weather detail from weatherwise onecall API
 function pullAllWeather() {
     var apiURLOneCall = "https://api.openweathermap.org/data/2.5/onecall?lat=" + latData + "&lon=" + lonData + "&units=imperial&exclude=minutely,hourly,alerts&appid="+apiKey;
     fetch(apiURLOneCall)
-    .then(function (response){
+    .then(function (response) {
         return response.json();
     })
     .then(function (data) {
@@ -73,15 +96,23 @@ function pullAllWeather() {
             weatherDetailToday.append(humidityToday);
             // pull today's UVI and add it to card
             var uviToday = $('<li>').text('UV Index:  '+ data.current.uvi);
+                if (data.current.uvi < 3) {
+                    uviToday.addClass('uvlow')
+                } else if (data.current.uvi < 5) {
+                    uviToday.addClass('uvmoderate')
+                } else {
+                    uviToday.addClass('uvhigh')
+                };
             weatherDetailToday.append(uviToday);
         // append todays weather to webpage
         weatherToday.append(weatherDetailToday);
         $('#weather-container').append(weatherToday);
-        
+
+
         // loop to create cards for 5 day forecast.
         for ( var i = 1; i < 6; i++) {
             // create card and add date to top
-            var dayBlock = $('<div>').addClass('card col-3');
+            var dayBlock = $('<div>').addClass('card col-2');
             var dateForecast = $('<h2>').text(moment.unix(data.daily[i].dt).format('l'));
             dayBlock.append(dateForecast);
             // add list to collect detail information on daily weather.
@@ -105,6 +136,7 @@ function pullAllWeather() {
                 $('#weather-container').append(dayBlock);
         }
       });
+    
 };
 
 

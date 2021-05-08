@@ -41,7 +41,21 @@
   p {
     font-size: 1.2rem;
   }
-  
+  .uvhigh {
+    background-color: red;
+    color: white;
+  }
+
+  .uvmoderate {
+    background-color: yellow;
+    color: white;
+  }
+
+  .uvlow {
+    background-color: green;
+    color: white;
+  }
+
    .btn {
     font-size: 1.3rem;
     text-decoration:none;
