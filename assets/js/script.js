@@ -51,26 +51,19 @@ function pullweather(locationData) {
         $('#searchCity').text(data.name);
         pullAllWeather();
 
-        // code to rebuild the history of past searches based on search.
-        // $('#pastSearch').empty();
+        // code to update local storage with recent search history.
         if (localStorage.getItem('pastSearchData') !== null) {
             priorSearches = JSON.parse(window.localStorage.getItem('pastSearchData'));
             priorSearches.unshift(data.name);
+            console.log("1")
             console.log(priorSearches);
             if (priorSearches.length > 5) {
                 priorSearches.pop();
-                localStorage.setItem('pastSearchData', JSON.stringify(priorSearches));
             };
             } else {
                 priorSearches.unshift(data.name);
-                localStorage.setItem('pastSearchData', JSON.stringify(priorSearches));
                 }
-            // for ( var i = 0; i < priorSearches.length; i ++) {
-            //     var pastButton2 = $('<div>').addClass('btn pastBtn');
-            //     pastButton2.text(priorSearches[i]);
-            //     $('#pastSearch').append(pastButton2)
-            //     };
-            // localStorage.setItem('pastSearchData', JSON.stringify(priorSearches));
+            localStorage.setItem('pastSearchData', JSON.stringify(priorSearches));
             pastSearchBuild();
     })
 };
