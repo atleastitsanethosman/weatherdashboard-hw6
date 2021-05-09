@@ -1,26 +1,31 @@
 // var holds key to access weather dashboard API
 var apiKey = 'aa13545b019a0a330e75fb7d4b324c87';
 
-// var locationFormEl = $('#locationForm');
-var PastSearchList = $('#pastSearch');
+// variable to pass data from pullweather to pullAllweather due to different call requirements.
 var latData = "";
 var lonData = "";
 
 
-// var cityDisplay = $('#searchCity');
-var repoSearchTerm = document.querySelector('#repo-search-term');
-
-// Pull search history if it exists.
+// Pull search history if it exists and populate.
 var priorSearches = []
-
-if (localStorage.getItem('pastSearchData') !== null) {
-    var priorSearches = JSON.parse(window.localStorage.getItem('pastSearchData'));
-    for ( var i = 0; i < priorSearches.length; i ++) {
-        var pastButton = $('<button>').addClass('btn pastBtn');
-        pastButton.text(priorSearches[i]);
-        $('#pastSearch').append(pastButton)
+function pastSearchBuild() {
+    $('#pastSearch').empty();
+    if (localStorage.getItem('pastSearchData') !== null) {
+        var priorSearches = JSON.parse(window.localStorage.getItem('pastSearchData'));
+        for ( var i = 0; i < priorSearches.length; i ++) {
+            var pastButton = $('<button>').addClass('btn pastBtn');
+            pastButton.text(priorSearches[i]);
+            $('#pastSearch').append(pastButton)
+        };
     };
+    // add event listener to search history buttons to get value when clicked.
+    $('.pastBtn').bind('click', function (event) {
+        var locationPast = $(this).html();
+        console.log(locationPast);
+        pullweather(locationPast)
+    });
 };
+
 
 function pullweather(locationData) {
     // removes any existing weather data to be overwritten by new.
@@ -47,23 +52,26 @@ function pullweather(locationData) {
         pullAllWeather();
 
         // code to rebuild the history of past searches based on search.
-        $('#pastSearch').empty();
+        // $('#pastSearch').empty();
         if (localStorage.getItem('pastSearchData') !== null) {
             priorSearches = JSON.parse(window.localStorage.getItem('pastSearchData'));
             priorSearches.unshift(data.name);
             console.log(priorSearches);
             if (priorSearches.length > 5) {
                 priorSearches.pop();
+                localStorage.setItem('pastSearchData', JSON.stringify(priorSearches));
             };
             } else {
                 priorSearches.unshift(data.name);
+                localStorage.setItem('pastSearchData', JSON.stringify(priorSearches));
                 }
-            for ( var i = 0; i < priorSearches.length; i ++) {
-                var pastButton2 = $('<button>').addClass('btn pastBtn');
-                pastButton2.text(priorSearches[i]);
-                $('#pastSearch').append(pastButton2)
-                };
-            localStorage.setItem('pastSearchData', JSON.stringify(priorSearches));
+            // for ( var i = 0; i < priorSearches.length; i ++) {
+            //     var pastButton2 = $('<div>').addClass('btn pastBtn');
+            //     pastButton2.text(priorSearches[i]);
+            //     $('#pastSearch').append(pastButton2)
+            //     };
+            // localStorage.setItem('pastSearchData', JSON.stringify(priorSearches));
+            pastSearchBuild();
     })
 };
 // pulls all needed weather detail from weatherwise onecall API
@@ -139,11 +147,14 @@ function pullAllWeather() {
     
 };
 
+// call function to build search history if available.
+pastSearchBuild();
 
+// code to take data from search form and trigger page functionality.
 $("#locationForm").submit(function(event) {
     event.preventDefault(); 
     var locationEl = $('#location').val();
-    console.log(locationEl);
     pullweather(locationEl);
-
 });
+
+
