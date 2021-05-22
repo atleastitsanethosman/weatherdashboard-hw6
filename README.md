@@ -28,3 +28,4 @@ The goal of this project was to generate a weather dashboard for a traveler.  Th
 Moment <https://momentjs.com/><br>
 jQuery <https://jquery.com/><br>
 Google Fonts <https://fonts.google.com/><br>
+openweathermap API <https://openweathermap.org/api><br>
