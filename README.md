@@ -29,3 +29,7 @@ Moment <https://momentjs.com/><br>
 jQuery <https://jquery.com/><br>
 Google Fonts <https://fonts.google.com/><br>
 openweathermap API <https://openweathermap.org/api><br>
+
+## License:<br>
+Copyright (c) 2021 Ian Hennessey
+Licensed under the [MIT LICENSE](LICENSE)
